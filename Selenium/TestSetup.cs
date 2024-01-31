@@ -1,6 +1,4 @@
-﻿using System;
-using NUnit.Framework;
-using OpenQA.Selenium;
+﻿using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
 using OpenQA.Selenium.Support.UI;
 
@@ -8,14 +6,16 @@ namespace BrowserSetup
 {
     public class TestSetup
     {
-        public IWebDriver Driver;
+        private IWebDriver driver;
+
+        public IWebDriver Driver { get => driver; set => driver = value; }
 
         [SetUp]
         public void Setup()
         {
             Console.WriteLine("Setting up for each test - Opening Chrome");
 
-            ChromeOptions options = new ChromeOptions();
+            ChromeOptions options = new();
             options.AddArgument("--start-maximized"); // Maximize the Chrome window
 
             Driver = new ChromeDriver(options);
@@ -28,53 +28,28 @@ namespace BrowserSetup
         public void TearDown()
         {
             Console.WriteLine("Tearing down for each test - Closing Chrome");
-            if (Driver != null)
-            {
-                Driver.Quit();
-                Driver.Dispose();
-            }
+            Driver.Quit();
+            Driver.Dispose();            
         }
 
         public void NavigateAndAssertUrl(string url)
         {
-            if (Driver != null)
-            {
-                Driver.Navigate().GoToUrl(url);
-
-                // Assert that the current URL is as expected
-                Assert.That(Driver.Url, Is.EqualTo(url));
-            }
-            else
-            {
-                Console.WriteLine("Driver is null. Navigation and assertion aborted.");
-            }
+            Driver.Navigate().GoToUrl(url);
+            // Assert that the current URL is as expected
+            Assert.That(Driver.Url, Is.EqualTo(url));
         }
 
         public void AssertUrl(string url)
         {
-            if (Driver != null)
-            {
-                // Assert that the current URL is as expected
-                Assert.That(Driver.Url, Is.EqualTo(url));
-            }
-            else
-            {
-                Console.WriteLine("Driver is null. Navigation and assertion aborted.");
-            }
+            // Assert that the current URL is as expected
+            Assert.That(Driver.Url, Is.EqualTo(url));
         }
 
         // Helper method for clicking an element by ID
         public void ClickElementById(string elementId)
         {
-            if (Driver != null)
-            {
-                IWebElement element = Driver.FindElement(By.Id(elementId));
-                element.Click();
-            }
-            else
-            {
-                Console.WriteLine("Driver is null. Click operation aborted.");
-            }
+            IWebElement element = Driver.FindElement(By.Id(elementId));
+            element.Click();
         }
 
         // Helper method to check if an element with a specific ID is visible
@@ -102,7 +77,6 @@ namespace BrowserSetup
         public void Sleep(int seconds)
         {
             Thread.Sleep(TimeSpan.FromSeconds(seconds));
-
         }
 
         public void AcceptCookies()
