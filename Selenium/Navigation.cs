@@ -3,7 +3,6 @@ using BrowserSetup;
 
 namespace Selenium
 {
-   // [TestFixture]
     public class Tests : TestSetup
     {
         [SetUp]
