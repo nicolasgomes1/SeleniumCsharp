@@ -2,8 +2,9 @@
 using NUnit.Framework;
 using OpenQA.Selenium;
 using OpenQA.Selenium.Chrome;
+using OpenQA.Selenium.Support.UI;
 
-namespace Selenium
+namespace BrowserSetup
 {
     public class TestSetup
     {
@@ -41,7 +42,20 @@ namespace Selenium
                 Driver.Navigate().GoToUrl(url);
 
                 // Assert that the current URL is as expected
-                Assert.AreEqual(url, Driver.Url);
+                Assert.That(Driver.Url, Is.EqualTo(url));
+            }
+            else
+            {
+                Console.WriteLine("Driver is null. Navigation and assertion aborted.");
+            }
+        }
+
+        public void AssertUrl(string url)
+        {
+            if (Driver != null)
+            {
+                // Assert that the current URL is as expected
+                Assert.That(Driver.Url, Is.EqualTo(url));
             }
             else
             {
@@ -85,12 +99,36 @@ namespace Selenium
         }
 
 
-        public void sleep(int seconds)
+        public void Sleep(int seconds)
         {
             Thread.Sleep(TimeSpan.FromSeconds(seconds));
 
         }
-}
+
+        public void AcceptCookies()
+        {
+            if (IsElementVisibleById("onetrust-banner-sdk"))
+            {
+                // If visible, click on the element with ID "onetrust-accept-btn-handler"
+                ClickElementById("onetrust-accept-btn-handler");
+            }
+        }
+        public void DropDownOptions(string partialText)
+        {
+            WebDriverWait wait = new WebDriverWait(Driver, TimeSpan.FromSeconds(10));
+
+            // Wait for the element with ID "products-popover" to be clickable
+            IWebElement popoverElement = wait.Until(driver => driver.FindElement(By.Id("products-popover")));
+
+            // Click on the element with partial text within the "products-popover" element
+            wait.Until(driver =>
+            {
+                IWebElement specificTextElement = popoverElement.FindElement(By.XPath($".//*[contains(text(), '{partialText}')]"));
+                specificTextElement.Click();
+                return true;
+            });
+        }
+    }
 }
 
 
